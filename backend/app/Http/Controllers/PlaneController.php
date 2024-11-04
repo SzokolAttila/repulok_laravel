@@ -41,6 +41,18 @@ class PlaneController extends Controller
             "averageSeats" => $this->getPlanesCollection()->avg(fn($plane) => $plane["seats"])
         ]);
     }
+
+    public function show(int $id) : View
+    {
+        $plane = $this->getPlanesCollection()->first(fn($plane) => $plane["id"] == $id);
+        if($plane == null)
+            abort(404);
+        return view("plane.show", [
+            "title" => $plane["manufacturer"] . " " . $plane["family"],
+            "plane" => $plane
+        ]);
+    }
+
     private function getPlanesCollection() : Collection
     {
         return collect([

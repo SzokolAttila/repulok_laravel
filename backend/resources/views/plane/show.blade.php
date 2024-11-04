@@ -9,19 +9,19 @@
                 <tbody>
                     <tr>
                         <td>Típus</td>
-                        <td></td>
+                        <td>@if($plane["type"] == "wide_body") {{ "Szélestörzsű" }} @elseif($plane["type"] == "narrow_body") {{"Keskenytörzsű"}} @endif</td>
                     </tr>
                     <tr>
                         <td>Hajtóművek száma</td>
-                        <td></td>
+                        <td>{{$plane["engines"]}}</td>
                     </tr>
                     <tr>
                         <td>Első felszállás</td>
-                        <td></td>
+                        <td>{{$plane["first_flight"]}}</td>
                     </tr>
                     <tr>
                         <td>Maximum ülések száma</td>
-                        <td><span class="badge text-bg-primary"> ülés</span></td>
+                        <td><span class="badge text-bg-primary">{{$plane["seats"]}} ülés</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -30,12 +30,14 @@
             <h2>A család típusai</h2>
             @isset($plane['variants'])    
                 <ul>
-                    
+                    @foreach($plane["variants"] as $variant)
+                        <li>{{$variant}}</li>
+                    @endforeach
                 </ul>
             @endisset
         </div>
         <div class="col-12">
-            <img src="" alt="" class="w-100 " >
+            <img src="{{asset("images/" . strtolower($plane["family"]) . ".jpg")}}" alt="" class="w-100 rounded" >
         </div>
     </div>
 @endsection
