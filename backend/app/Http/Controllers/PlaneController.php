@@ -4,9 +4,43 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\View\View;
 
 class PlaneController extends Controller
 {
+    public function index(Request $request) : View
+    {
+        $planes = $this->getPlanesCollection();
+        $manufacturer = $request->query("manufacturer");
+        if($manufacturer != null)
+            $planes = $planes->where("manufacturer", "=", $manufacturer);
+        $type = $request->query("type");
+        if($type != null)
+            $planes = $planes->where("type", "=", $type);
+        $minSeats = $request->query("minSeats");
+        if($minSeats != null)
+            $planes = $planes->where("seats", ">=", $minSeats);
+        $maxSeats = $request->query("maxSeats");
+        if($maxSeats != null)
+            $planes = $planes->where("seats", "<=", $maxSeats);
+        $orderBy = $request->query("orderBy");
+        $order = $request->query("order");
+        if($orderBy != null)
+        {
+            if($orderBy == "seats")
+                $planes = $planes->sortBy("seats", descending: $order == "desc");
+            else if ($orderBy == "first_flight")
+                $planes = $planes->sortBy("first_flight", descending: $order == "desc");
+        }
+        return view("plane.index", [
+            "title" => "Repulok ({$planes->count()} db)",
+            "planes" => $planes,
+            "query" => $request->query(),
+            "maxSeats" => $this->getPlanesCollection()->first(fn($plane) => $this->getPlanesCollection()->max(fn($a) => $a["seats"]) == $plane["seats"]),
+            "oldest" => $this->getPlanesCollection()->first(fn($plane) => $this->getPlanesCollection()->min(fn($a) => $a["first_flight"]) == $plane["first_flight"]),
+            "averageSeats" => $this->getPlanesCollection()->avg(fn($plane) => $plane["seats"])
+        ]);
+    }
     private function getPlanesCollection() : Collection
     {
         return collect([

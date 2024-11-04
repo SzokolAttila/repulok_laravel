@@ -10,8 +10,10 @@
 
 
 
-            @isset($plane)
-                @include('plane.partials.card', ['plane' => $plane])
+            @isset($planes)
+                @foreach($planes as $plane)
+                  @include('plane.partials.card', ['plane' => $plane])
+                @endforeach
             @endisset
 
 
